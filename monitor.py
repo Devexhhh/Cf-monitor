@@ -22,7 +22,6 @@ def notify(title, message):
         timeout=5
     )
 
-
 print("Codeforces Monitor Started...")
 
 while True:
