@@ -1,11 +1,16 @@
 import time
 import requests
-from plyer import notification
+from datetime import datetime
 
 URL = "https://codeforces.com"
 CHECK_INTERVAL = 30
 
-was_up = None
+last_status = None
+
+
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
 def is_codeforces_up():
     try:
@@ -15,29 +20,29 @@ def is_codeforces_up():
         return False
 
 
-def notify(title, message):
-    notification.notify(
-        title=title,
-        message=message,
-        timeout=5
-    )
+def log(message):
+    print(f"[{get_current_time()}] {message}")
 
-print("Codeforces Monitor Started...")
+
+log("Codeforces Monitor Started")
 
 while True:
-    up = is_codeforces_up()
+    current_status = is_codeforces_up()
 
-    if was_up is None:
-        was_up = up
+    if current_status:
+        log("CURRENT STATUS: UP")
+    else:
+        log("CURRENT STATUS: DOWN")
 
-    elif up != was_up:
-        if up:
-            notify("Codeforces is BACK!", "The server is running again.")
-            print("Codeforces is BACK!")
+    if last_status is None:
+        last_status = current_status
+
+    elif current_status != last_status:
+        if current_status:
+            log("STATUS CHANGE DETECTED: Codeforces is BACK UP")
         else:
-            notify("Codeforces is DOWN!", "The server is not reachable.")
-            print("Codeforces is DOWN!")
+            log("STATUS CHANGE DETECTED: Codeforces is DOWN")
 
-        was_up = up
+        last_status = current_status
 
     time.sleep(CHECK_INTERVAL)
