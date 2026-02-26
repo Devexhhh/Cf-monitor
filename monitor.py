@@ -7,41 +7,45 @@ CHECK_INTERVAL = 30
 
 last_status = None
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
-}
+session = requests.Session()
+
+session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Connection": "keep-alive",
+})
 
 
-def get_time():
+def now():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def is_codeforces_up():
+def is_up():
     try:
-        response = requests.get(
-            URL,
-            headers=headers,
-            timeout=10,
-            allow_redirects=True
-        )
+        response = session.get(URL, timeout=15)
 
         print(f"[DEBUG] Status Code: {response.status_code}")
 
-        return response.status_code == 200
+        if response.status_code == 200 and "Codeforces" in response.text:
+            return True
 
-    except requests.RequestException as e:
-        print(f"[DEBUG] Exception: {e}")
+        return False
+
+    except Exception as e:
+        print(f"[DEBUG] Error: {e}")
         return False
 
 
 def log(msg):
-    print(f"[{get_time()}] {msg}")
+    print(f"[{now()}] {msg}")
 
 
 log("Monitor Started")
 
 while True:
-    current_status = is_codeforces_up()
+
+    current_status = is_up()
 
     if current_status:
         log("CURRENT STATUS: UP")
