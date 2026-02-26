@@ -2,7 +2,7 @@ import time
 import requests
 from datetime import datetime
 
-URL = "https://codeforces.com"
+URL = "https://codeforces.com/api/problemset.problems"
 CHECK_INTERVAL = 30
 
 last_status = None
@@ -27,7 +27,7 @@ def is_up():
 
         print(f"[DEBUG] Status Code: {response.status_code}")
 
-        if response.status_code == 200 and "Codeforces" in response.text:
+        if response.status_code == 200 and response.json()["status"] == "OK":
             return True
 
         return False
